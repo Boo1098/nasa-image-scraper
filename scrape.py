@@ -1,19 +1,11 @@
 #!./env/bin/python
 import requests
-import pandas as pd
-import selenium
 import time
-from selenium import webdriver
-from bs4 import BeautifulSoup
-
-wd = webdriver.Firefox()
+import json
 
 def fetch_image_ids(query:str, start:int, end:int, max_links_to_fetch:int):
-    def scroll_to_end(wd):
-        wd.execute_script("window.scrollTo(0,document.body.scrollHeight);")
-
-    # build the google query
-    search_url = "https://images.nasa.gov/search-results?q={query}&page={page}&media=image&yearStart={start}&yearEnd={end}"
+    # build the query
+    search_url =    "https://images-api.nasa.gov/search?q={query}&page={page}&media_type=image&year_start={start}&year_end={end}"
 
     page =1
 
@@ -21,30 +13,29 @@ def fetch_image_ids(query:str, start:int, end:int, max_links_to_fetch:int):
     #scroll_to_end(wd)
 
     ids=[]
+    done = False
 
-    while len(ids)<max_links_to_fetch:
-        wd.get(search_url.format(query=query,start=start,end=end,page=page))
-        time.sleep(2)
+    while len(ids)<max_links_to_fetch and not done:
+        print(search_url.format(query=query,page=page,start=start,end=end))
+        response=requests.get(search_url.format(query=query,page=page,start=start,end=end))
+        time.sleep(3)
+        if response.status_code==200:
+            response_json = response.json()
 
-        soup = BeautifulSoup(wd.page_source,'html.parser')
-        images = soup.find_all('img')
+            for key,value in response_json:
+                if key == "nasa_id":
+                    nasa_id = value
+                    print(nasa_id)
+                    ids.append(nasa_id)
 
-        # get all image thumbnail results
-        thumbnail_results=wd.find_element_by_tag_name('img')
-        
-        for img in images:
-            src = img.get('src')
-            if 'images-assets.nasa.gov' in src:
-                parts = src.split('/')
-                nasa_id = parts[4]
-                ids.append(nasa_id)
+            ids=list(set(ids))
+            page=page+1
+            print(len(ids))
 
-        ids=list(set(ids))
-        page=page+1
-        print(len(ids))
+            with open('nasa_ids', 'w') as f:
+                for item in ids:
+                    f.write("%s\n" % item)
+        else:
+            print('oo')
 
-    with open('nasa_ids', 'w') as f:
-        for item in ids:
-            f.write("%s\n" % item)
-
-fetch_image_ids("apollo",1960,1975,1000)
+fetch_image_ids("apollo",1960,1975,2000)
