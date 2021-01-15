@@ -64,12 +64,12 @@ with open(filepath) as fp:
             if not path.exists(image_filepath.format(extension=ext)):
                 response = requests.get(image_url.format(extension=ext))
                 if response.status_code==200:
-                        print("{nasa_id} download started".format(nasa_id=nasa_id))
-                        image_file=open(image_filepath.format(extension=ext),"wb")
-                        image_file.write(response.content)
-                        image_file.close()
-                        print("{nasa_id} image gathered".format(nasa_id=nasa_id))
-                        time.sleep(time_between_interactions)
+                    print("{nasa_id} download started".format(nasa_id=nasa_id))
+                    image_file=open(image_filepath.format(extension=ext),"wb")
+                    image_file.write(response.content)
+                    image_file.close()
+                    print("{nasa_id} image gathered".format(nasa_id=nasa_id))
+                    time.sleep(time_between_interactions)
                 else:
                     print(response.status_code)
                     raise Exception
