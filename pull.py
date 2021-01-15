@@ -9,32 +9,32 @@ time_between_interactions = 1
 
 filepath = 'nasa_ids'
 with open(filepath) as fp:
-    for cnt, line in enumerate(fp):
-        line =line.strip()
-        asset_url = "https://images-api.nasa.gov/asset/{id}".format(id=line)
-        metadata_url = "https://images-assets.nasa.gov/image/{id}/metadata.json".format(id=line)
+    for cnt, nasa_id in enumerate(fp):
+        nasa_id =nasa_id.strip()
+        asset_url = "https://images-api.nasa.gov/asset/{nasa_id}".format(nasa_id=nasa_id)
+        metadata_url = "https://images-assets.nasa.gov/image/{nasa_id}/metadata.json".format(nasa_id=nasa_id)
 
         # Check that file doesn't already exist
         image_exists = False
         for file_name in os.listdir('./images'):
-            if file_name.startswith(line):
+            if file_name.startswith(nasa_id):
                 image_exists = True
         json_exists = False
         for file_name in os.listdir('./images/json'):
-            if file_name.startswith(line):
+            if file_name.startswith(nasa_id):
                 json_exists = True
 
-        print("Checking {id}".format(id=line))
+        print("Checking {nasa_id}".format(nasa_id=nasa_id))
 
         if not json_exists:
             metadata = requests.get(metadata_url)
 
-            metadata_filepath = "images/json/{id}.json".format(id=line)
+            metadata_filepath = "images/json/{nasa_id}.json".format(nasa_id=nasa_id)
             if metadata.status_code==200:
                 metadata_file = open(metadata_filepath,"wb")
                 metadata_file.write(metadata.content)
                 metadata_file.close()
-                print("{id} json gathered".format(id=line))
+                print("{nasa_id} json gathered".format(nasa_id=nasa_id))
                 time.sleep(time_between_interactions)
             else:
                 print(metadata.status_code)
@@ -44,7 +44,7 @@ with open(filepath) as fp:
                 metadata_json = json.load(f)
 
         else:
-            print("{id} json already downloaded, skipping".format(id=line))
+            print("{nasa_id} json already downloaded, skipping".format(nasa_id=nasa_id))
 
         if not image_exists:
             asset = requests.get(asset_url)
@@ -59,16 +59,16 @@ with open(filepath) as fp:
 
             ext = image_url.split('.')[-1]
 
-            image_filepath = "images/{id}.{extension}".format(id=line,extension="{extension}")
+            image_filepath = "images/{nasa_id}.{extension}".format(nasa_id=nasa_id,extension="{extension}")
 
             if not path.exists(image_filepath.format(extension=ext)):
                 response = requests.get(image_url.format(extension=ext))
                 if response.status_code==200:
-                        print("{id} download started".format(id=line))
+                        print("{nasa_id} download started".format(nasa_id=nasa_id))
                         image_file=open(image_filepath.format(extension=ext),"wb")
                         image_file.write(response.content)
                         image_file.close()
-                        print("{id} image gathered".format(id=line))
+                        print("{nasa_id} image gathered".format(nasa_id=nasa_id))
                         time.sleep(time_between_interactions)
                 else:
                     print(response.status_code)
@@ -76,5 +76,5 @@ with open(filepath) as fp:
             else:
                 print("File already downloaded")
         else:
-            print("{id} image already downloaded, skipping".format(id=line))
+            print("{nasa_id} image already downloaded, skipping".format(nasa_id=nasa_id))
 
