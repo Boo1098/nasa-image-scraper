@@ -2,6 +2,7 @@
 import requests
 import time
 import json
+import argparse
 
 def fetch_image_ids(query:str, start:int, end:int, max_links_to_fetch:int):
     # build the query
@@ -36,4 +37,12 @@ def fetch_image_ids(query:str, start:int, end:int, max_links_to_fetch:int):
             print('oof')
             raise Exception
 
-fetch_image_ids("apollo",1960,1975,10000)
+parser = argparse.ArgumentParser(description='Gather ids of NASA images based on query')
+#parser.add_argument('-query',metavar='q',type=str,nargs='1',help='Query to search images for')
+parser.add_argument('query',help="Query to search images with",type=str)
+parser.add_argument('-n','--number-of-ids',help="Max number of ids to retrieve",type=int,default=10000)
+parser.add_argument('-s','--start',help="Start year",type=int,default=1900)
+parser.add_argument('-e','--end',help="End Year",type=int,default=2050)
+args = parser.parse_args()
+print(args)
+fetch_image_ids(args.query,args.start,args.end,args.number_of_ids)
