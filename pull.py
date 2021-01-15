@@ -5,6 +5,8 @@ import json
 import os.path
 from os import path
 
+time_between_interactions = 1
+
 filepath = 'nasa_ids'
 with open(filepath) as fp:
     for cnt, line in enumerate(fp):
@@ -33,7 +35,7 @@ with open(filepath) as fp:
                 metadata_file.write(metadata.content)
                 metadata_file.close()
                 print("{id} json gathered".format(id=line))
-                time.sleep(1)
+                time.sleep(time_between_interactions)
             else:
                 print(metadata.status_code)
                 raise Exception
@@ -50,7 +52,7 @@ with open(filepath) as fp:
             if asset.status_code==200:
                 asset_json = asset.json()
                 image_url = asset_json["collection"]["items"][0]["href"]
-                time.sleep(1)
+                time.sleep(time_between_interactions)
             else:
                 print(asset.status_code)
                 raise Exception
@@ -67,7 +69,7 @@ with open(filepath) as fp:
                         image_file.write(response.content)
                         image_file.close()
                         print("{id} image gathered".format(id=line))
-                        time.sleep(1)
+                        time.sleep(time_between_interactions)
                 else:
                     print(response.status_code)
                     raise Exception
