@@ -43,7 +43,7 @@ def fetch_image_ids(query:str, start:int, end:int, max_links_to_fetch:int):
         page=page+1
         print(len(ids))
 
-    with open('nasa_ids.txt', 'w') as f:
+    with open('nasa_ids', 'w') as f:
         for item in ids:
             f.write("%s\n" % item)
 
