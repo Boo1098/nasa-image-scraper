@@ -62,6 +62,7 @@ with open(filepath) as fp:
             if not path.exists(image_filepath.format(extension=ext)):
                 response = requests.get(image_url.format(extension=ext))
                 if response.status_code==200:
+                        print("{id} download started".format(id=line))
                         image_file=open(image_filepath.format(extension=ext),"wb")
                         image_file.write(response.content)
                         image_file.close()
