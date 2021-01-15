@@ -9,24 +9,21 @@ def fetch_image_ids(query:str, start:int, end:int, max_links_to_fetch:int):
 
     page =1
 
-    # load the page
-    #scroll_to_end(wd)
-
     ids=[]
     done = False
 
-    while len(ids)<max_links_to_fetch and not done:
-        print(search_url.format(query=query,page=page,start=start,end=end))
+    last_ids_len = -1
+
+    while len(ids)<max_links_to_fetch and len(ids)!=last_ids_len:
+        last_ids_len = len(ids)
         response=requests.get(search_url.format(query=query,page=page,start=start,end=end))
-        time.sleep(3)
+        time.sleep(.5)
         if response.status_code==200:
             response_json = response.json()
 
-            for key,value in response_json:
-                if key == "nasa_id":
-                    nasa_id = value
-                    print(nasa_id)
-                    ids.append(nasa_id)
+            for item in response_json["collection"]["items"]:
+                nasa_id=item["data"][0]["nasa_id"]
+                ids.append(nasa_id)
 
             ids=list(set(ids))
             page=page+1
@@ -36,6 +33,7 @@ def fetch_image_ids(query:str, start:int, end:int, max_links_to_fetch:int):
                 for item in ids:
                     f.write("%s\n" % item)
         else:
-            print('oo')
+            print('oof')
+            raise Exception
 
-fetch_image_ids("apollo",1960,1975,2000)
+fetch_image_ids("apollo",1960,1975,10000)

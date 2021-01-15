@@ -32,6 +32,7 @@ with open(filepath) as fp:
                 metadata_file = open(metadata_filepath,"wb")
                 metadata_file.write(metadata.content)
                 metadata_file.close()
+                print("{id} json gathered".format(id=line))
                 time.sleep(1)
             else:
                 print(metadata.status_code)
@@ -39,6 +40,7 @@ with open(filepath) as fp:
 
             with open(metadata_filepath) as f:
                 metadata_json = json.load(f)
+
         else:
             print("{id} json already downloaded, skipping".format(id=line))
 
@@ -63,7 +65,8 @@ with open(filepath) as fp:
                         image_file=open(image_filepath.format(extension=ext),"wb")
                         image_file.write(response.content)
                         image_file.close()
-                        time.sleep(3)
+                        print("{id} image gathered".format(id=line))
+                        time.sleep(1)
                 else:
                     print(response.status_code)
                     raise Exception
