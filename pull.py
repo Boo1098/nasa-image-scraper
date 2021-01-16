@@ -10,9 +10,13 @@ logging.basicConfig(level=logging.DEBUG)
 
 time_between_interactions = 1
 
+
 def pull_images(id_file: str, image_folder: str, json_folder: str):
+    """ Pulls all images from given id_file from images.nasa.gov
+    """
+    id_count = sum(1 for line in open(id_file))
     with open(id_file) as fp:
-        for nasa_id in fp:
+        for line_number, nasa_id in enumerate(fp):
             # Remove new line character from id
             nasa_id = nasa_id.strip()
 
@@ -37,7 +41,7 @@ def pull_images(id_file: str, image_folder: str, json_folder: str):
                 metadata = requests.get(metadata_url)
 
                 metadata_filepath = "{json_folder}/{nasa_id}.json".format(
-                    json_folder=json_folder,nasa_id=nasa_id)
+                    json_folder=json_folder, nasa_id=nasa_id)
 
                 if metadata.status_code == 200:
                     metadata_file = open(metadata_filepath, "wb")
@@ -79,7 +83,7 @@ def pull_images(id_file: str, image_folder: str, json_folder: str):
                 ext = image_url.split('.')[-1]
 
                 image_filepath = "{image_folder}/{nasa_id}.{extension}".format(
-                    image_folder=image_folder,nasa_id=nasa_id, extension=ext)
+                    image_folder=image_folder, nasa_id=nasa_id, extension=ext)
 
                 # Get and save the original size photo
                 response = requests.get(image_url.format(extension=ext))
