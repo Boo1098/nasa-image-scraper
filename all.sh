@@ -3,5 +3,5 @@
 for i in {1920..2022}
 do
 	echo $i
-	./scrape.py '' -s $i -e $i -n 100000
+	./scrape.py '' -s $i -e $i -n 100000 -o all_ids
 done

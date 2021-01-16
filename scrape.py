@@ -10,7 +10,8 @@ time_between_interactions = 1
 logging.basicConfig(level=logging.INFO)
 
 
-def fetch_image_ids(query: str, start: int, end: int, max_links_to_fetch: int):
+def fetch_image_ids(query: str, start: int, end: int, max_links_to_fetch: int,
+                    output_file: str):
     # Query Format
     search_url = "https://images-api.nasa.gov/search?q={query}&page={page}&media_type=image&year_start={start}&year_end={end}"
 
@@ -45,15 +46,15 @@ def fetch_image_ids(query: str, start: int, end: int, max_links_to_fetch: int):
             logging.info("{ids} collected.".format(ids=len(ids)))
 
         else:
-            logging.error('Failed to get page {page}. Received status {code}'.format(page=page,code=response.status_code))
+            logging.error(
+                'Failed to get page {page}. Received status {code}'.format(
+                    page=page, code=response.status_code))
             raise Exception
 
     # Put ids in file
-    with open('nasa_ids', 'a') as f:
+    with open(output_file, 'a') as f:
         for item in ids:
             f.write("%s\n" % item)
-
-
 
 
 parser = argparse.ArgumentParser(
@@ -66,5 +67,11 @@ parser.add_argument('-n',
                     default=10000)
 parser.add_argument('-s', '--start', help="Start year", type=int, default=1900)
 parser.add_argument('-e', '--end', help="End Year", type=int, default=2050)
+parser.add_argument('-o',
+                    '--output',
+                    help="Output file",
+                    type=str,
+                    default='nasa_id')
 args = parser.parse_args()
-fetch_image_ids(args.query, args.start, args.end, args.number_of_ids)
+fetch_image_ids(args.query, args.start, args.end, args.number_of_ids,
+                args.output)
