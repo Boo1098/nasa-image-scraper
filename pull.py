@@ -3,6 +3,7 @@ import requests
 import time
 import json
 import os.path
+import logging
 from os import path
 
 time_between_interactions = 1
@@ -29,7 +30,7 @@ with open(filepath) as fp:
             if file_name.startswith(nasa_id):
                 json_exists = True
 
-        print("Checking {nasa_id}".format(nasa_id=nasa_id))
+        logging.debug("Checking {nasa_id}".format(nasa_id=nasa_id))
 
         # Start by gathering metadata
         if not json_exists:
@@ -42,17 +43,19 @@ with open(filepath) as fp:
                 metadata_file = open(metadata_filepath, "wb")
                 metadata_file.write(metadata.content)
                 metadata_file.close()
-                print("{nasa_id} json gathered".format(nasa_id=nasa_id))
+                logging.info("{nasa_id} json gathered".format(nasa_id=nasa_id))
                 time.sleep(time_between_interactions)
             else:
-                print(metadata.status_code)
+                logging.error(
+                    "Failed to download metadata for id {id}, received status code {code}"
+                    .format(id=nasa_id, code=asset.status_code))
                 raise Exception
 
             with open(metadata_filepath) as f:
                 metadata_json = json.load(f)
 
         else:
-            print("{nasa_id} json already downloaded, skipping".format(
+            logging.info("{nasa_id} json already downloaded, skipping".format(
                 nasa_id=nasa_id))
 
         # Gather image
@@ -66,7 +69,9 @@ with open(filepath) as fp:
                 image_url = asset_json["collection"]["items"][0]["href"]
                 time.sleep(time_between_interactions)
             else:
-                print(asset.status_code)
+                logging.error(
+                    "Failed to download asset for id {id}, received status code {code}"
+                    .format(id=nasa_id, code=asset.status_code))
                 raise Exception
 
             # Get extension from url for when image is saved
@@ -75,17 +80,22 @@ with open(filepath) as fp:
             image_filepath = "images/{nasa_id}.{extension}".format(
                 nasa_id=nasa_id, extension=ext)
 
+            # Get and save the original size photo
             response = requests.get(image_url.format(extension=ext))
             if response.status_code == 200:
-                print("{nasa_id} download started".format(nasa_id=nasa_id))
+                logging.debug(
+                    "{nasa_id} download started".format(nasa_id=nasa_id))
                 image_file = open(image_filepath, "wb")
                 image_file.write(response.content)
                 image_file.close()
-                print("{nasa_id} image gathered".format(nasa_id=nasa_id))
+                logging.info(
+                    "{nasa_id} image gathered".format(nasa_id=nasa_id))
                 time.sleep(time_between_interactions)
             else:
-                print(response.status_code)
+                logging.error(
+                    "Failed to download image for id {id}, received status code {code}"
+                    .format(id=nasa_id, code=asset.status_code))
                 raise Exception
         else:
-            print("{nasa_id} image already downloaded, skipping".format(
+            logging.info("{nasa_id} image already downloaded, skipping".format(
                 nasa_id=nasa_id))
