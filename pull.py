@@ -55,7 +55,6 @@ with open(filepath) as fp:
 
             with open(metadata_filepath) as f:
                 metadata_json = json.load(f)
-
         else:
             logging.info("{nasa_id} json already downloaded, skipping".format(
                 nasa_id=nasa_id))

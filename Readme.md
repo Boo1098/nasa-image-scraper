@@ -9,3 +9,7 @@ This generates a file called ```nasa_ids``` that contains all the NASA ids for a
 ## pull.py
 
 This fills the directory ```./images``` and ```./images/json``` with the images and json metadata respectively for all ids in the ```nasa_ids``` file
+
+# Notes
+
+NASA's start and end dates are both inclusive

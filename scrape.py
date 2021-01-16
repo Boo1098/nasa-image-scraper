@@ -42,16 +42,18 @@ def fetch_image_ids(query: str, start: int, end: int, max_links_to_fetch: int):
             ids = list(set(ids))
 
             page = page + 1
-            logging.debug("{ids} collected.".format(ids=len(ids)))
-
-            # Put ids in file
-            with open('nasa_ids', 'w') as f:
-                for item in ids:
-                    f.write("%s\n" % item)
+            logging.info("{ids} collected.".format(ids=len(ids)))
 
         else:
             logging.error('Failed to get page {page}. Received status {code}'.format(page=page,code=response.status_code))
             raise Exception
+
+    # Put ids in file
+    with open('nasa_ids', 'a') as f:
+        for item in ids:
+            f.write("%s\n" % item)
+
+
 
 
 parser = argparse.ArgumentParser(
