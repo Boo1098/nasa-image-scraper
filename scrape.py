@@ -5,7 +5,7 @@ import json
 import argparse
 import logging
 
-time_between_interactions = 1
+time_between_interactions = 0.5
 
 logging.basicConfig(level=logging.INFO)
 
@@ -34,6 +34,9 @@ def fetch_image_ids(query: str, start: int, end: int, max_links_to_fetch: int,
         # Ensure data actually there
         if response.status_code == 200:
             response_json = response.json()
+
+            if last_ids_len==0:
+                logging.info("Total hits: {hits}".format(hits=response_json['collection']['metadata']['total_hits']))
 
             for item in response_json["collection"]["items"]:
                 nasa_id = item["data"][0]["nasa_id"]
