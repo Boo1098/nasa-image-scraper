@@ -2,9 +2,8 @@
 import requests
 import time
 import json
-import os.path
+import glob
 import logging
-from os import path
 
 logging.basicConfig(level=logging.INFO)
 
@@ -23,14 +22,8 @@ with open(filepath) as fp:
             nasa_id=nasa_id)
 
         # Check that files doesn't already exist
-        image_exists = False
-        for file_name in os.listdir('./images'):
-            if file_name.startswith(nasa_id):
-                image_exists = True
-        json_exists = False
-        for file_name in os.listdir('./images/json'):
-            if file_name.startswith(nasa_id):
-                json_exists = True
+        image_exists = bool(glob.glob('images/{id}.*'.format(id=nasa_id)))
+        json_exists = bool(glob.glob('images/json/{id}.json'.format(id=nasa_id)))
 
         logging.debug("Checking {nasa_id}".format(nasa_id=nasa_id))
 
