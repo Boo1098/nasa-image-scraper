@@ -10,8 +10,17 @@ time_between_interactions = 0.5
 logging.basicConfig(level=logging.INFO)
 
 
-def fetch_image_ids(query: str, start: int, end: int, max_links_to_fetch: int,
+def fetch_image_ids(query: str, start: int, end: int, min_links_to_fetch: int,
                     output_file: str):
+    """Grab NASA ids from images.nasa.gov and save to file based on query.
+
+    Args:
+        query (str): query Query to search images for
+        start (int): start Lower bound of year image was taken (inclusive)
+        end (int): end Upper bound of year image was taken (inclusive)
+        min_links_to_fetch (int): min_links_to_fetch Minimum links to grab. Will get at least this many, or how ever many images are in query.
+        output_file (str): output_file Text file to put NASA ids into.
+    """
     # Query Format
     search_url = "https://images-api.nasa.gov/search?q={query}&page={page}&media_type=image&year_start={start}&year_end={end}"
 
@@ -23,7 +32,7 @@ def fetch_image_ids(query: str, start: int, end: int, max_links_to_fetch: int,
     last_ids_len = -1
 
     # Goes until has more than max requested, or until there are no more ids
-    while len(ids) < max_links_to_fetch and len(ids) != last_ids_len:
+    while len(ids) < min_links_to_fetch and len(ids) != last_ids_len:
         last_ids_len = len(ids)
 
         # Gather page of ids from nasa
@@ -35,8 +44,10 @@ def fetch_image_ids(query: str, start: int, end: int, max_links_to_fetch: int,
         if response.status_code == 200:
             response_json = response.json()
 
-            if last_ids_len==0:
-                logging.info("Total hits: {hits}".format(hits=response_json['collection']['metadata']['total_hits']))
+            if last_ids_len == 0:
+                logging.info("Total hits: {hits}".format(
+                    hits=response_json['collection']['metadata']
+                    ['total_hits']))
 
             for item in response_json["collection"]["items"]:
                 nasa_id = item["data"][0]["nasa_id"]
