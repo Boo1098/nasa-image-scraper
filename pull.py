@@ -6,6 +6,8 @@ import os.path
 import logging
 from os import path
 
+logging.basicConfig(level=logging.INFO)
+
 time_between_interactions = 1
 
 filepath = 'nasa_ids'

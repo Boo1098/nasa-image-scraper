@@ -3,8 +3,11 @@ import requests
 import time
 import json
 import argparse
+import logging
 
 time_between_interactions = 1
+
+logging.basicConfig(level=logging.INFO)
 
 
 def fetch_image_ids(query: str, start: int, end: int, max_links_to_fetch: int):
@@ -39,7 +42,7 @@ def fetch_image_ids(query: str, start: int, end: int, max_links_to_fetch: int):
             ids = list(set(ids))
 
             page = page + 1
-            print(len(ids))
+            logging.debug("{ids} collected.".format(ids=len(ids)))
 
             # Put ids in file
             with open('nasa_ids', 'w') as f:
@@ -47,7 +50,7 @@ def fetch_image_ids(query: str, start: int, end: int, max_links_to_fetch: int):
                     f.write("%s\n" % item)
 
         else:
-            print('oof')
+            logging.error('Failed to get page {page}. Received status {code}'.format(page=page,code=response.status_code))
             raise Exception
 
 
