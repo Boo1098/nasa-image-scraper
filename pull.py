@@ -12,7 +12,12 @@ time_between_interactions = 1
 
 
 def pull_images(id_file: str, image_folder: str, json_folder: str):
-    """ Pulls all images from given id_file from images.nasa.gov
+    """Pull images from images.nasa.gov based on ids from file and save metadata and images in folder.
+
+    Args:
+        id_file (str): id_file file to pull NASA ids from
+        image_folder (str): image_folder folder to store images in
+        json_folder (str): json_folder folder to store metadata in
     """
     id_count = sum(1 for line in open(id_file))
     with open(id_file) as fp:
