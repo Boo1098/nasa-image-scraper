@@ -4,7 +4,9 @@ import time
 import json
 import argparse
 import logging
+import coloredlogs
 
+coloredlogs.install()
 time_between_interactions = 0.5
 
 logging.basicConfig(level=logging.INFO)

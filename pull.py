@@ -5,8 +5,10 @@ import json
 import glob
 import logging
 import argparse
+import coloredlogs
 
-logging.basicConfig(level=logging.DEBUG)
+coloredlogs.install()
+logging.basicConfig(level=logging.INFO)
 
 time_between_interactions = 1
 
@@ -56,13 +58,11 @@ def pull_images(id_file: str, image_folder: str, json_folder: str):
                         "{nasa_id} json gathered".format(nasa_id=nasa_id))
                     time.sleep(time_between_interactions)
                 else:
-                    logging.error(
+                    logging.warning(
                         "Failed to download metadata for id {id}, received status code {code}"
-                        .format(id=nasa_id, code=asset.status_code))
-                    raise Exception
+                        .format(id=nasa_id, code=metadata.status_code))
+                    #raise Exception
 
-                with open(metadata_filepath) as f:
-                    metadata_json = json.load(f)
             else:
                 logging.info(
                     "{nasa_id} json already downloaded, skipping".format(
