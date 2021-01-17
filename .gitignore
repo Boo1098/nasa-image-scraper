@@ -1,3 +1,5 @@
 env/
 nasa_ids*
 images/
+Session.vim
+all_ids
