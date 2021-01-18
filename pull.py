@@ -6,9 +6,9 @@ import glob
 import logging
 import argparse
 import coloredlogs
+import progressbar
 
-coloredlogs.install()
-logging.basicConfig(level=logging.INFO)
+coloredlogs.install(level=logging.ERROR)
 
 time_between_interactions = 1
 
@@ -22,6 +22,17 @@ def pull_images(id_file: str, image_folder: str, json_folder: str):
         json_folder (str): json_folder folder to store metadata in
     """
     id_count = sum(1 for line in open(id_file))
+
+    widgets = [
+        '',
+        progressbar.Percentage(), '',
+        progressbar.Bar('>'), '',
+        progressbar.ETA(), 'Processed: ',
+        progressbar.Counter('Counter: %(value)05d')
+    ]
+    total_progress = progressbar.ProgressBar(widgets=widgets,
+                                             max_value=id_count).start()
+
     with open(id_file) as fp:
         for line_number, nasa_id in enumerate(fp):
             # Remove new line character from id
@@ -110,6 +121,8 @@ def pull_images(id_file: str, image_folder: str, json_folder: str):
                 logging.info(
                     "{nasa_id} image already downloaded, skipping".format(
                         nasa_id=nasa_id))
+            total_progress.update(line_number)
+    total_progress.finish()
 
 
 parser = argparse.ArgumentParser(
